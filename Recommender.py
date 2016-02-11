@@ -73,7 +73,7 @@ def test_recommender():
     maxIter = 30 # try different iteration
     Criterion = 1e-5
 
-    F += 2
+    F += 2 # add two columns for the user and moview biases
     P = np.random.rand(U, F)
     Q = np.random.rand(M, F)
     P[:, F-1] = np.ones(U) # assume the first column is the bias of each user
