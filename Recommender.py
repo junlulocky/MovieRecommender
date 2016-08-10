@@ -1,6 +1,5 @@
 """
 # Title: Movie Recommender System Based on Matrix Factorization
-# Author: Jun Lu
 # Description: train and test on the movielens100k.mat dataset
                The dataset for this project comes from MovieLens (http://grouplens.org/).
                 It consists of 100,000 ratings from 1000 users on 1700 movies.
@@ -51,6 +50,16 @@ def data_preprocessing():
     return RTe, R
 
 def max_factorize_ALS(X, hid_dim, lamb=0.08, max_iter=100, isSparse=False, Criterion=1e-5):
+    """
+
+    :param X: The matrix to be factorized
+    :param hid_dim: hidden dimension
+    :param lamb: tradeoff of penalization
+    :param max_iter: max iteration
+    :param isSparse: indicator whether the training matrix is sparse or not
+    :param Criterion: not used now,
+    :return: factorized matrix, and reconstructed matrix
+    """
     num_row, num_col = X.shape
     if isSparse:
         ## get all the non zeros rows and columns
