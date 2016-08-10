@@ -49,7 +49,7 @@ def data_preprocessing():
 
     return RTe, R
 
-def max_factorize_ALS(X, hid_dim, lamb=0.08, max_iter=100, isSparse=False, Criterion=1e-5):
+def matrix_factorize_ALS(X, hid_dim, lamb=0.08, max_iter=100, isSparse=False, Criterion=1e-5):
     """
 
     :param X: The matrix to be factorized
@@ -91,7 +91,7 @@ def max_factorize_ALS(X, hid_dim, lamb=0.08, max_iter=100, isSparse=False, Crite
 
     for k in range(max_iter):
         # ALS update
-        for m in range(M):
+        for m in range(num_col):
             idx = idxColumn[m] # indexes of nonzero entries of movie m
             nm = len(idx)
             pm = P[idx, 1:hid_dim]
@@ -100,7 +100,7 @@ def max_factorize_ALS(X, hid_dim, lamb=0.08, max_iter=100, isSparse=False, Crite
             Q[m, 1:hid_dim] = (tmp.dot(pm.T).dot(rm))  # do not update the first column, it's always 1's for the bias of each user
             # non-negative
             # Q[m, 1:F] = Q[m, 1:F]*(Q[m, 1:F] >= 0)
-        for u in range(U):
+        for u in range(num_row):
             idx = idxRow[u] # indexes of nonzero entries of user u
             nu = len(idx)
             qu = Q[idx, 0:hid_dim-1]
@@ -111,7 +111,7 @@ def max_factorize_ALS(X, hid_dim, lamb=0.08, max_iter=100, isSparse=False, Crite
             # P[u, 0:F-1] = P[u, 0:F-1]*(P[u, 0:F-1] >= 0)
         R_pred = P.dot(Q.T)
         R_pred = R_pred + np.sum(X[idxTr]-R_pred[idxTr])/numTotalTr
-        L[k] = np.sum((R[idxTr]-R_pred[idxTr])**2)/numTotalTr
+        L[k] = np.sum((X[idxTr]-R_pred[idxTr])**2)/numTotalTr
         print(('iteration %i: Train error=%.15f') %(k, L[k]))
         # if k > 0 and L[k-1] - L[k] < Criterion:
         #     break
@@ -133,7 +133,7 @@ def test_recommender():
     Criterion = 1e-5
 
     ## Matrix factorization
-    P, Q, R_pred = max_factorize_ALS(R_Train, F, lamb=lamb, max_iter=maxIter, isSparse=True, Criterion=Criterion)
+    P, Q, R_pred = matrix_factorize_ALS(R_Train, F, lamb=lamb, max_iter=maxIter, isSparse=True, Criterion=Criterion)
     R_pred = P.dot(Q.T)
 
     R_pred[np.where(R_pred > 5)] = 5
